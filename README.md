@@ -2,19 +2,19 @@
 
 ## Hardware Tutorial
 
-In this tutorial, we build a `Fonduer` application to tackle the task of
+In this tutorial, we build a Fonduer application to tackle the task of
 extracting maximum storage temperatures for specific transistor part numbers
 from their datasheets.
 
 ### Hardware Figures Tutorial
 
-In this tutorial, we build a `Fonduer` application to tackle the task of
+In this tutorial, we build a Fonduer application to tackle the task of
 extracting images for specific transistors from their datasheets. This
 demonstrates how `Fonuder` can be used for image data in additional to text.
 
 ### Paleo Tutorial
 
-In this tutorial, we will build a `Fonduer` application to tackle the task of
+In this tutorial, we will build a Fonduer application to tackle the task of
 extracting formation measurements from paleontological publications.
 
 ## Dependencies
@@ -53,7 +53,7 @@ source .venv/bin/activate
 Any Python libraries installed will now be contained within this virtual
 environment. To deactivate the environment, simply run `deactivate`.
 
-Then, install fonduer and any other python dependencies by running:
+Then, install Fonduer and any other python dependencies by running:
 
 ```bash
 pip install -r requirements.txt
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 ## Running
 
-After installing Fonduer, and the additional python dependencies, just run:
+After installing all the requirements, just run:
 
 ```
 jupyter notebook
