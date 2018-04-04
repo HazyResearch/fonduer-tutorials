@@ -5,8 +5,8 @@ import codecs
 import csv
 
 from fonduer.lf_helpers import *
-from fonduer.snorkel.models import GoldLabel, GoldLabelKey
-from fonduer.snorkel.utils import ProgressBar
+from fonduer.models import GoldLabel, GoldLabelKey
+from fonduer.utils import ProgressBar
 
 
 def get_gold_dict(filename,

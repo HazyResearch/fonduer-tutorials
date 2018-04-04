@@ -3,8 +3,8 @@ from __future__ import division
 from builtins import range
 import csv
 import codecs
-from fonduer.snorkel.models import GoldLabel, GoldLabelKey
-from fonduer.snorkel.utils import ProgressBar
+from fonduer.models import GoldLabel, GoldLabelKey
+from fonduer.utils import ProgressBar
 
 
 def get_gold_dict(filename, doc_on=True, formation_on=True, measurement_on=True, attribute=None, docs=None, integerize=False):
