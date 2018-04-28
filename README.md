@@ -10,7 +10,7 @@ from their datasheets.
 
 In this tutorial, we build a Fonduer application to tackle the task of
 extracting images for specific transistors from their datasheets. This
-demonstrates how `Fonuder` can be used for image data in additional to text.
+demonstrates how `Fonduer` can be used for image data in additional to text.
 
 ### Paleo Tutorial
 
