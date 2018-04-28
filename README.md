@@ -32,8 +32,9 @@ brew install postgresql
 On Debian-based distros:
 
 ```bash
-sudo apt-get install poppler-utils
-sudo apt-get install postgresql
+sudo apt install libxml2-dev libxslt-dev python3-dev
+sudo apt install poppler-utils
+sudo apt install postgresql
 ```
 
 For the Python dependencies, we recommend using a
