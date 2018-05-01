@@ -12,11 +12,6 @@ In this tutorial, we build a Fonduer application to tackle the task of
 extracting images for specific transistors from their datasheets. This
 demonstrates how `Fonduer` can be used for image data in additional to text.
 
-### Paleo Tutorial
-
-In this tutorial, we will build a Fonduer application to tackle the task of
-extracting formation measurements from paleontological publications.
-
 ## Dependencies
 
 We use a few applications that you'll need to install and be sure are on your
