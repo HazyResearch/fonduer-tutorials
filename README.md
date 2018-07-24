@@ -1,4 +1,10 @@
+![fonduer-logo](https://raw.githubusercontent.com/HazyResearch/fonduer/master/docs/static/img/fonduer-logo.png)
 # Fonduer Tutorials
+
+## Introduction Tutorials
+
+We have several [introductory tutorials](intro/) to help get you started with
+using Fonduer.
 
 ## Hardware Tutorial
 

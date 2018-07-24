@@ -5,7 +5,7 @@ from builtins import range
 from difflib import SequenceMatcher
 import re
 from fonduer.candidates import OmniNgrams
-from fonduer.models import TemporaryImplicitSpan
+from fonduer.candidates.models import TemporaryImplicitSpan
 
 
 def expand_part_range(text, DEBUG=False):
