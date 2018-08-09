@@ -4,7 +4,6 @@ from builtins import range
 import codecs
 import csv
 
-from fonduer.supervision.lf_helpers import *
 from fonduer.supervision.models import GoldLabel, GoldLabelKey
 from fonduer.utils import ProgressBar
 
@@ -55,12 +54,15 @@ def load_hardware_labels(session,
     labels = []
     for i, c in enumerate(candidates):
         pb.bar(i)
-        doc = (c[0].sentence.document.name).upper()
-        part = (c[0].get_span()).upper()
-        val = (''.join(c[1].get_span().split())).upper()
-        context_stable_ids = '~~'.join([i.stable_id for i in c.get_contexts()])
-        label = session.query(GoldLabel).filter(GoldLabel.key == ak).filter(
-            GoldLabel.candidate == c).first()
+        doc = (c[0].span.sentence.document.name).upper()
+        part = (c[0].span.get_span()).upper()
+        val = ("".join(c[1].span.get_span().split())).upper()
+        label = (
+            session.query(GoldLabel)
+            .filter(GoldLabel.key == ak)
+            .filter(GoldLabel.candidate == c)
+            .first()
+        )
         if label is None:
             if (doc, part, val) in gold_dict:
                 label = GoldLabel(candidate=c, key=ak, value=1)
@@ -121,10 +123,10 @@ def entity_level_f1(candidates,
     entities = set()
     for i, c in enumerate(candidates):
         pb.bar(i)
-        part = c[0].get_span()
-        doc = c[0].sentence.document.name.upper()
+        part = c[0].span.get_span()
+        doc = c[0].span.sentence.document.name.upper()
         if attribute:
-            val = c[1].get_span()
+            val = c[1].span.get_span()
         for p in get_implied_parts(part, doc, parts_by_doc):
             if attribute:
                 entities.add((doc, p, val))
@@ -163,8 +165,8 @@ def get_implied_parts(part, doc, parts_by_doc):
 def entity_to_candidates(entity, candidate_subset):
     matches = []
     for c in candidate_subset:
-        c_entity = tuple([c[0].sentence.document.name.upper()] +
-                         [c[i].get_span().upper() for i in range(len(c))])
+        c_entity = tuple([c[0].span.sentence.document.name.upper()] +
+                         [c[i].span.get_span().upper() for i in range(len(c))])
         c_entity = tuple([str(x) for x in c_entity])
         if c_entity == entity:
             matches.append(c)
