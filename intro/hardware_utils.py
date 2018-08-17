@@ -1,19 +1,23 @@
-from __future__ import print_function
-from __future__ import division
-from builtins import range
 import codecs
 import csv
+from builtins import range
 
 from fonduer.supervision.models import GoldLabel, GoldLabelKey
-from fonduer.utils import ProgressBar
+
+try:
+    from IPython import get_ipython
+
+    if "IPKernelApp" not in get_ipython().config:
+        raise ImportError("console")
+except ImportError:
+    from tqdm import tqdm
+else:
+    from tqdm import tqdm_notebook as tqdm
 
 
-def get_gold_dict(filename,
-                  doc_on=True,
-                  part_on=True,
-                  val_on=True,
-                  attribute=None,
-                  docs=None):
+def get_gold_dict(
+    filename, doc_on=True, part_on=True, val_on=True, attribute=None, docs=None
+):
     with codecs.open(filename, encoding="utf-8") as csvfile:
         gold_reader = csv.reader(csvfile)
         gold_dict = set()
@@ -26,21 +30,20 @@ def get_gold_dict(filename,
                     continue
                 else:
                     key = []
-                    if doc_on: key.append(doc.upper())
-                    if part_on: key.append(part.upper())
-                    if val_on: key.append(val.upper())
+                    if doc_on:
+                        key.append(doc.upper())
+                    if part_on:
+                        key.append(part.upper())
+                    if val_on:
+                        key.append(val.upper())
                     gold_dict.add(tuple(key))
     return gold_dict
 
 
-def load_hardware_labels(session,
-                         candidate_class,
-                         filename,
-                         attrib,
-                         annotator_name='gold'):
-
-    ak = session.query(GoldLabelKey).filter(
-        GoldLabelKey.name == annotator_name).first()
+def load_hardware_labels(
+    session, candidate_class, filename, attrib, annotator_name="gold"
+):
+    ak = session.query(GoldLabelKey).filter(GoldLabelKey.name == annotator_name).first()
     if ak is None:
         ak = GoldLabelKey(name=annotator_name)
         session.add(ak)
@@ -49,11 +52,9 @@ def load_hardware_labels(session,
     candidates = session.query(candidate_class).all()
     gold_dict = get_gold_dict(filename, attribute=attrib)
     cand_total = len(candidates)
-    print('Loading', cand_total, 'candidate labels')
-    pb = ProgressBar(cand_total)
+    print("Loading {} candidate labels".format(cand_total))
     labels = []
-    for i, c in enumerate(candidates):
-        pb.bar(i)
+    for i, c in enumerate(tqdm(candidates)):
         doc = (c[0].span.sentence.document.name).upper()
         part = (c[0].span.get_span()).upper()
         val = ("".join(c[1].span.get_span().split())).upper()
@@ -71,10 +72,9 @@ def load_hardware_labels(session,
             session.add(label)
             labels.append(label)
     session.commit()
-    pb.close()
 
     session.commit()
-    print("AnnotatorLabels created: %s" % (len(labels), ))
+    print("AnnotatorLabels created: %s" % (len(labels),))
 
 
 def entity_confusion_matrix(pred, gold):
@@ -88,11 +88,9 @@ def entity_confusion_matrix(pred, gold):
     return (TP, FP, FN)
 
 
-def entity_level_f1(candidates,
-                    gold_file,
-                    attribute=None,
-                    corpus=None,
-                    parts_by_doc=None):
+def entity_level_f1(
+    candidates, gold_file, attribute=None, corpus=None, parts_by_doc=None
+):
     """Checks entity-level recall of candidates compared to gold.
 
     Turns a CandidateSet into a normal set of entity-level tuples
@@ -106,23 +104,23 @@ def entity_level_f1(candidates,
         entity_level_total_recall(candidates, gold_file, 'stg_temp_min')
     """
     docs = [(doc.name).upper() for doc in corpus] if corpus else None
-    val_on = (attribute is not None)
+    val_on = attribute is not None
     gold_set = get_gold_dict(
         gold_file,
         docs=docs,
         doc_on=True,
         part_on=True,
         val_on=val_on,
-        attribute=attribute)
+        attribute=attribute,
+    )
     if len(gold_set) == 0:
+        print("Gold File: {}\n Attribute: {}".format(gold_file, attribute))
         print("Gold set is empty.")
         return
     # Turn CandidateSet into set of tuples
     print("Preparing candidates...")
-    pb = ProgressBar(len(candidates))
     entities = set()
-    for i, c in enumerate(candidates):
-        pb.bar(i)
+    for i, c in enumerate(tqdm(candidates)):
         part = c[0].span.get_span()
         doc = c[0].span.sentence.document.name.upper()
         if attribute:
@@ -132,16 +130,15 @@ def entity_level_f1(candidates,
                 entities.add((doc, p, val))
             else:
                 entities.add((doc, p))
-    pb.close()
 
     (TP_set, FP_set, FN_set) = entity_confusion_matrix(entities, gold_set)
     TP = len(TP_set)
     FP = len(FP_set)
     FN = len(FN_set)
 
-    prec = TP / (TP + FP) if TP + FP > 0 else float('nan')
-    rec = TP / (TP + FN) if TP + FN > 0 else float('nan')
-    f1 = 2 * (prec * rec) / (prec + rec) if prec + rec > 0 else float('nan')
+    prec = TP / (TP + FP) if TP + FP > 0 else float("nan")
+    rec = TP / (TP + FN) if TP + FN > 0 else float("nan")
+    f1 = 2 * (prec * rec) / (prec + rec) if prec + rec > 0 else float("nan")
     print("========================================")
     print("Scoring on Entity-Level Gold Data")
     print("========================================")
@@ -165,8 +162,10 @@ def get_implied_parts(part, doc, parts_by_doc):
 def entity_to_candidates(entity, candidate_subset):
     matches = []
     for c in candidate_subset:
-        c_entity = tuple([c[0].span.sentence.document.name.upper()] +
-                         [c[i].span.get_span().upper() for i in range(len(c))])
+        c_entity = tuple(
+            [c[0].span.sentence.document.name.upper()]
+            + [c[i].span.get_span().upper() for i in range(len(c))]
+        )
         c_entity = tuple([str(x) for x in c_entity])
         if c_entity == entity:
             matches.append(c)
