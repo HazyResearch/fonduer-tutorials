@@ -15,6 +15,11 @@ else:
     from tqdm import tqdm_notebook as tqdm
 
 
+# Define labels
+ABSTAIN = 0
+FALSE = 1
+TRUE = 2
+
 def get_gold_dict(
     filename, doc_on=True, part_on=True, val_on=True, attribute=None, docs=None
 ):
@@ -26,7 +31,7 @@ def get_gold_dict(
             if docs is None or doc.upper() in docs:
                 if attribute and attr != attribute:
                     continue
-                if not val:
+                if val == TRUE:
                     continue
                 else:
                     key = []
@@ -84,9 +89,9 @@ def load_hardware_labels(
         label = session.query(GoldLabel).filter(GoldLabel.candidate == c).first()
         if label is None:
             if (doc, part, val) in gold_dict:
-                values.append(1)
+                values.append(TRUE)
             else:
-                values.append(-1)
+                values.append(FALSE)
 
             cands.append(c)
             labels += 1
@@ -141,7 +146,8 @@ def entity_level_f1(
         attribute=attribute,
     )
     if len(gold_set) == 0:
-
+        print("Gold File: {}\n Attribute: {}".format(gold_file, attribute))
+        print("Gold set is empty.")
         return
     # Turn CandidateSet into set of tuples
     print("Preparing candidates...")
@@ -174,7 +180,6 @@ def entity_level_f1(
     print("----------------------------------------")
     print("TP: {} | FP: {} | FN: {}".format(TP, FP, FN))
     print("========================================\n")
-
     return [sorted(list(x)) for x in [TP_set, FP_set, FN_set]]
 
 

@@ -9,11 +9,16 @@ try:
 
     if "IPKernelApp" not in get_ipython().config:
         raise ImportError("console")
-except ImportError:
+except (AttributeError, ImportError):
     from tqdm import tqdm
 else:
     from tqdm import tqdm_notebook as tqdm
 
+
+# Define labels
+ABSTAIN = 0
+FALSE = 1
+TRUE = 2
 
 def get_gold_dict(
     filename, doc_on=True, part_on=True, val_on=True, attribute=None, docs=None
@@ -26,7 +31,7 @@ def get_gold_dict(
             if docs is None or doc.upper() in docs:
                 if attribute and attr != attribute:
                     continue
-                if not val:
+                if val == TRUE:
                     continue
                 else:
                     key = []
@@ -41,40 +46,67 @@ def get_gold_dict(
 
 
 def load_hardware_labels(
-    session, candidate_class, filename, attrib, annotator_name="gold"
+    session, candidate_classes, filename, attrib, annotator_name="gold"
 ):
+    """Bulk insert hardware GoldLabels.
+
+    :param session: The database session to use.
+    :param candidate_classes: Which candidate_classes to load labels for.
+    :param filename: Path to the CSV file containing gold labels.
+    :param attrib: Which attributes to load labels for (e.g. "stg_temp_max").
+    """
+    # Check that candidate_classes is iterable
+    candidate_classes = (
+        candidate_classes
+        if isinstance(candidate_classes, (list, tuple))
+        else [candidate_classes]
+    )
+
     ak = session.query(GoldLabelKey).filter(GoldLabelKey.name == annotator_name).first()
+    # Add the gold key
     if ak is None:
         ak = GoldLabelKey(name=annotator_name)
         session.add(ak)
         session.commit()
 
-    candidates = session.query(candidate_class).all()
+    # Bulk insert candidate labels
+    candidates = []
+    for candidate_class in candidate_classes:
+        candidates.extend(session.query(candidate_class).all())
+
     gold_dict = get_gold_dict(filename, attribute=attrib)
     cand_total = len(candidates)
     print("Loading {} candidate labels".format(cand_total))
-    labels = []
+    labels = 0
+
+    cands = []
+    values = []
     for i, c in enumerate(tqdm(candidates)):
         doc = (c[0].span.sentence.document.name).upper()
         part = (c[0].span.get_span()).upper()
         val = ("".join(c[1].span.get_span().split())).upper()
-        label = (
-            session.query(GoldLabel)
-            .filter(GoldLabel.key == ak)
-            .filter(GoldLabel.candidate == c)
-            .first()
-        )
+
+        label = session.query(GoldLabel).filter(GoldLabel.candidate == c).first()
         if label is None:
             if (doc, part, val) in gold_dict:
-                label = GoldLabel(candidate=c, key=ak, value=1)
+                values.append(TRUE)
             else:
-                label = GoldLabel(candidate=c, key=ak, value=-1)
-            session.add(label)
-            labels.append(label)
+                values.append(FALSE)
+
+            cands.append(c)
+            labels += 1
+
+    # Only insert the labels which were not already present
+    session.bulk_insert_mappings(
+        GoldLabel,
+        [
+            {"candidate_id": cand.id, "keys": [annotator_name], "values": [val]}
+            for (cand, val) in zip(cands, values)
+        ],
+    )
     session.commit()
 
-    session.commit()
-    print("AnnotatorLabels created: %s" % (len(labels),))
+    print("GoldLabels created: {}".format(labels))
 
 
 def entity_confusion_matrix(pred, gold):
@@ -100,7 +132,7 @@ def entity_level_f1(
     Example Usage:
         from hardware_utils import entity_level_total_recall
         candidates = # CandidateSet of all candidates you want to consider
-        gold_file = os.environ['FONDUERHOME'] + '/tutorials/tables/data/hardware/hardware_gold.csv'
+        gold_file = 'tutorials/tables/data/hardware/hardware_gold.csv'
         entity_level_total_recall(candidates, gold_file, 'stg_temp_min')
     """
     docs = [(doc.name).upper() for doc in corpus] if corpus else None
