@@ -28,12 +28,13 @@ For OS X using [homebrew](https://brew.sh):
 ```bash
 brew install poppler
 brew install postgresql
+brew install libpng freetype pkg-config
 ```
 
 On Debian-based distros:
 
 ```bash
-sudo apt install libxml2-dev libxslt-dev python3-dev
+sudo apt install libxml2-dev libxslt-dev python3-dev build-dep python-matplotlib
 sudo apt install poppler-utils
 sudo apt install postgresql
 ```
