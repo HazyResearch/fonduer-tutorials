@@ -23,5 +23,5 @@ our goal is to extract the (transistor part number, maximum storage temperature)
  relation pairs:
 
 ```
-("Abraham Lincoln", "LaRue County")
+("Abraham Lincoln", "Sinking Spring Farm")
 ```
