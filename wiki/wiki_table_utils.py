@@ -103,31 +103,22 @@ def load_president_gold_labels(
 
     cands = []
     values = []
-    positive_labels = 0
-    negative_labels = 0
     for i, c in enumerate(tqdm(candidates)):
         doc = (c[0].span.sentence.document.name).upper()
         president_name = (c[0].span.get_span()).upper()
         birthplace = (c[1].span.get_span()).upper()
 
-        label = session.query(GoldLabel).filter(GoldLabel.candidate == c).first()
-        if label is None:
-            cand_tuple = (doc, president_name, birthplace)
-            #gold_matches = [x for x in gold_dict if x[0] == doc]
-            if cand_tuple in gold_dict:
-                values.append(TRUE)
-                positive_labels += 1
-            else:
-                values.append(FALSE)
-                negative_labels += 1
-
-            cands.append(c)
-            labels += 1
+        cand_tuple = (doc, president_name, birthplace)
+        #gold_matches = [x for x in gold_dict if x[0] == doc]
+        if cand_tuple in gold_dict:
+            values.append(TRUE)
         else:
-            input(label)
+            values.append(FALSE)
+
+        cands.append(c)
+        labels += 1
 
 
-    print('found {} positive and {} negative labels in wikidata GT'.format(positive_labels, negative_labels))
     # Only insert the labels which were not already present
     session.bulk_insert_mappings(
         GoldLabel,
