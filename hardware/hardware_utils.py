@@ -20,6 +20,7 @@ ABSTAIN = 0
 FALSE = 1
 TRUE = 2
 
+
 def get_gold_dict(
     filename, doc_on=True, part_on=True, val_on=True, attribute=None, docs=None
 ):
@@ -65,7 +66,10 @@ def load_hardware_labels(
     ak = session.query(GoldLabelKey).filter(GoldLabelKey.name == annotator_name).first()
     # Add the gold key
     if ak is None:
-        ak = GoldLabelKey(name=annotator_name)
+        ak = GoldLabelKey(
+            name=annotator_name,
+            candidate_classes=[_.__tablename__ for _ in candidate_classes],
+        )
         session.add(ak)
         session.commit()
 

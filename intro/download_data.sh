@@ -1,6 +1,6 @@
 echo "Downloading tutorial databases..."
-url=http://i.stanford.edu/hazy/share/fonduer/intro_dbs_v0.3.0.tar.gz
-data_tar=intro_dbs_v0.3.0
+url=http://i.stanford.edu/hazy/share/fonduer/intro_dbs_v0.3.4.tar.gz
+data_tar=intro_dbs_v0.3.4
 if type curl &>/dev/null; then
     curl -RLO $url
 elif type wget &>/dev/null; then
