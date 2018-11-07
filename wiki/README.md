@@ -19,8 +19,7 @@ For example, the simplified datasheet snippet:
 
 ![html-snippet](imgs/sample-html.png)
 
-our goal is to extract the (transistor part number, maximum storage temperature)
- relation pairs:
+Our goal is to extract the (President name, Place of birth) relation pairs:
 
 ```
 ("Abraham Lincoln", "Sinking Spring Farm")
