@@ -15,9 +15,8 @@ RUN rm /etc/ImageMagick-6/policy.xml
 
 RUN pip install torch==0.4.1
 RUN pip install \
-    fonduer==0.3.4 \
-    matplotlib \
-    snorkel-metal==0.2.4
+    fonduer==0.3.6 \
+    matplotlib
 
 RUN python -m spacy download en
 RUN conda install -y -c conda-forge ipywidgets
