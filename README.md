@@ -18,7 +18,15 @@ In this tutorial, we build a Fonduer application to tackle the task of
 extracting images for specific transistors from their datasheets. This
 demonstrates how `Fonduer` can be used for image data in additional to text.
 
-## Dependencies
+## Quick Start
+
+```bash
+docker-compose up
+```
+
+## Installation
+
+### Dependencies
 
 We use a few applications that you'll need to install and be sure are on your
 PATH.
@@ -63,7 +71,7 @@ Then, install Fonduer and any other python dependencies by running:
 pip install -r requirements.txt
 ```
 
-## Running
+### Running
 
 After installing all the requirements, just run:
 

@@ -1,0 +1,17 @@
+version: "3"
+services:
+
+  jupyter:
+    image: hiromuhota/fonduer-tutorials
+    ports:
+      - "8888:8888"
+    links:
+      - postgres
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: jovyan
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
