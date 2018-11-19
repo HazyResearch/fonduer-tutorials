@@ -8,15 +8,21 @@ using Fonduer.
 
 ## Hardware Tutorial
 
-In this tutorial, we build a Fonduer application to tackle the task of
-extracting maximum storage temperatures for specific transistor part numbers
-from their datasheets.
+In this [tutorial](hardware/), we build a Fonduer application to tackle the
+task of extracting maximum storage temperatures for specific transistor part
+numbers from their datasheets (PDF format).
+
+## Wiki Tutorial
+
+In this [tutorial](wiki/), we use Fonduer to extract the place of of birth
+for American presidents from their wikipedia html pages (HTML format).
 
 ### Hardware Figures Tutorial
 
-In this tutorial, we build a Fonduer application to tackle the task of
-extracting images for specific transistors from their datasheets. This
-demonstrates how `Fonduer` can be used for image data in additional to text.
+In this [advanced tutorial](hardware_image/), we build a Fonduer application
+to tackle the task of extracting images for specific transistors from their
+datasheets. This demonstrates how `Fonduer` can be used for image data in
+additional to text.
 
 ## Quick Start
 
