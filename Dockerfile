@@ -15,7 +15,7 @@ RUN rm /etc/ImageMagick-6/policy.xml
 
 RUN pip install torch==0.4.1
 RUN pip install \
-    fonduer==0.3.6 \
+    fonduer==0.4.0 \
     matplotlib
 
 RUN python -m spacy download en
