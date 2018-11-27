@@ -66,7 +66,6 @@ def load_president_gold_labels(
         else [candidate_classes]
     )
 
-
     print("Clearing ALL Gold labels")
     session.query(GoldLabel).delete()
     session.query(GoldLabelKey).delete()
@@ -74,7 +73,10 @@ def load_president_gold_labels(
     ak = session.query(GoldLabelKey).filter(GoldLabelKey.name == annotator_name).first()
     # Add the gold key
     if ak is None:
-        ak = GoldLabelKey(name=annotator_name)
+        ak = GoldLabelKey(
+            name=annotator_name,
+            candidate_classes=[_.__tablename__ for _ in candidate_classes],
+        )
         session.add(ak)
         session.commit()
 
@@ -92,7 +94,7 @@ def load_president_gold_labels(
     print('{} different docs in gold dict'.format(len(docs_in_gold_dict)))
     candidates_by_doc = dict()
     for name, place in candidates:
-        doc = name.span.sentence.document.name
+        doc = name.context.sentence.document.name
         if doc not in candidates_by_doc:
             candidates_by_doc[doc] = {name:[place]}
         else:
@@ -104,9 +106,9 @@ def load_president_gold_labels(
     cands = []
     values = []
     for i, c in enumerate(tqdm(candidates)):
-        doc = (c[0].span.sentence.document.name).upper()
-        president_name = (c[0].span.get_span()).upper()
-        birthplace = (c[1].span.get_span()).upper()
+        doc = (c[0].context.sentence.document.name).upper()
+        president_name = (c[0].context.get_span()).upper()
+        birthplace = (c[1].context.get_span()).upper()
 
         cand_tuple = (doc, president_name, birthplace)
         #gold_matches = [x for x in gold_dict if x[0] == doc]
@@ -172,9 +174,9 @@ def entity_level_f1(
     print("Preparing candidates...")
     entities = set()
     for i, c in enumerate(tqdm(candidates)):
-        doc = c[0].span.sentence.document.name.upper()
-        president_name = c[0].span.get_span().upper()
-        birthplace = c[1].span.get_span().upper()
+        doc = c[0].context.sentence.document.name.upper()
+        president_name = c[0].context.get_span().upper()
+        birthplace = c[1].context.get_span().upper()
         entities.add((doc, president_name, birthplace))
 
     (TP_set, FP_set, FN_set) = entity_confusion_matrix(entities, gold_set)
