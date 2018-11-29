@@ -1,4 +1,5 @@
-FROM jupyter/minimal-notebook
+# To avoid HazyResearch/metal#101, pin tag of the base image to have python 3.6.X
+FROM jupyter/minimal-notebook:9e8682c9ea54
 LABEL maintainer="Hiromu Hota <hiromu.hota@hal.hitachi.com>"
 USER root
 
