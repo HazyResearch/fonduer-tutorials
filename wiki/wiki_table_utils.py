@@ -16,8 +16,6 @@ else:
     from tqdm import tqdm_notebook as tqdm
 
 
-
-
 # Define labels
 ABSTAIN = 0
 FALSE = 1
@@ -25,16 +23,16 @@ TRUE = 2
 
 
 def get_gold_dict(
-        filename, doc_on=True, presidentname_on=True, placeofbirth_on=True, docs=None
+    filename, doc_on=True, presidentname_on=True, placeofbirth_on=True, docs=None
 ):
     with codecs.open(filename) as csvfile:
-        gold_reader = csv.reader(csvfile, delimiter=';')
-        #skip header row
+        gold_reader = csv.reader(csvfile, delimiter=";")
+        # skip header row
         next(gold_reader)
         gold_dict = set()
         for row in gold_reader:
             (doc, presidentname, placeofbirth) = row
-            docname_without_spaces = doc.replace(' ','_')
+            docname_without_spaces = doc.replace(" ", "_")
             if docs is None or docname_without_spaces.upper() in docs:
                 if not (doc and placeofbirth and presidentname):
                     continue
@@ -51,7 +49,7 @@ def get_gold_dict(
 
 
 def load_president_gold_labels(
-        session, candidate_classes, filename, annotator_name="gold"
+    session, candidate_classes, filename, annotator_name="gold"
 ):
     """Bulk insert hardware GoldLabels.
 
@@ -87,16 +85,16 @@ def load_president_gold_labels(
 
     gold_dict = get_gold_dict(filename)
     cand_total = len(candidates)
-    print("Loading {} candidate labels".format(cand_total))
+    print(f"Loading {cand_total} candidate labels")
     labels = 0
 
     docs_in_gold_dict = set([x[0] for x in gold_dict])
-    print('{} different docs in gold dict'.format(len(docs_in_gold_dict)))
+    print(f"{len(docs_in_gold_dict)} different docs in gold dict")
     candidates_by_doc = dict()
     for name, place in candidates:
         doc = name.context.sentence.document.name
         if doc not in candidates_by_doc:
-            candidates_by_doc[doc] = {name:[place]}
+            candidates_by_doc[doc] = {name: [place]}
         else:
             if name not in candidates_by_doc[doc]:
                 candidates_by_doc[doc][name] = [place]
@@ -111,7 +109,7 @@ def load_president_gold_labels(
         birthplace = (c[1].context.get_span()).upper()
 
         cand_tuple = (doc, president_name, birthplace)
-        #gold_matches = [x for x in gold_dict if x[0] == doc]
+        # gold_matches = [x for x in gold_dict if x[0] == doc]
         if cand_tuple in gold_dict:
             values.append(TRUE)
         else:
@@ -119,7 +117,6 @@ def load_president_gold_labels(
 
         cands.append(c)
         labels += 1
-
 
     # Only insert the labels which were not already present
     session.bulk_insert_mappings(
@@ -131,10 +128,10 @@ def load_president_gold_labels(
     )
     session.commit()
 
-    print("GoldLabels created: {}".format(labels))
+    print(f"GoldLabels created: {labels}")
 
 
-#TODO: Should gold data only contain ONE true candidate per article?
+# TODO: Should gold data only contain ONE true candidate per article?
 def entity_confusion_matrix(pred, gold):
     if not isinstance(pred, set):
         pred = set(pred)
@@ -146,9 +143,7 @@ def entity_confusion_matrix(pred, gold):
     return (TP, FP, FN)
 
 
-def entity_level_f1(
-        candidates, gold_file, corpus=None
-):
+def entity_level_f1(candidates, gold_file, corpus=None):
     """Checks entity-level recall of candidates compared to gold.
 
     Turns a CandidateSet into a normal set of entity-level tuples
@@ -162,12 +157,9 @@ def entity_level_f1(
         entity_level_total_recall(candidates, gold_file, 'stg_temp_min')
     """
     docs = [(doc.name).upper() for doc in corpus] if corpus else None
-    gold_set = get_gold_dict(
-        gold_file,
-        docs=docs,
-    )
+    gold_set = get_gold_dict(gold_file, docs=docs)
     if len(gold_set) == 0:
-        print("Gold File: {}".format(gold_file))
+        print("Gold File: {gold_file}")
         print("Gold set is empty.")
         return
     # Turn CandidateSet into set of tuples
@@ -190,14 +182,10 @@ def entity_level_f1(
     print("========================================")
     print("Scoring on Entity-Level Gold Data")
     print("========================================")
-    print("Corpus Precision {:.3}".format(prec))
-    print("Corpus Recall    {:.3}".format(rec))
-    print("Corpus F1        {:.3}".format(f1))
+    print(f"Corpus Precision {prec:.3}")
+    print(f"Corpus Recall    {rec:.3}")
+    print(f"Corpus F1        {f1:.3}")
     print("----------------------------------------")
-    print("TP: {} | FP: {} | FN: {}".format(TP, FP, FN))
+    print(f"TP: {TP} | FP: {FP} | FN: {FN}")
     print("========================================\n")
     return [sorted(list(x)) for x in [TP_set, FP_set, FN_set]]
-
-
-
-
