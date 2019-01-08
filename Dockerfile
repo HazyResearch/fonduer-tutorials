@@ -14,15 +14,15 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/{apt,dpkg,cache,log}/
 RUN rm /etc/ImageMagick-6/policy.xml
 
+USER $NB_UID
+
 RUN pip install torch==0.4.1
 RUN pip install \
-    fonduer==0.4.0 \
+    fonduer>=0.5.0 \
     matplotlib
 
 RUN python -m spacy download en
 RUN conda install -y -c conda-forge ipywidgets
-
-USER $NB_UID
 
 # Copy notebooks and download data
 COPY --chown=jovyan:users hardware hardware
