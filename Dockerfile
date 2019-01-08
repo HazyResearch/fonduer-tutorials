@@ -1,5 +1,4 @@
-# To avoid HazyResearch/metal#101, pin tag of the base image to have python 3.6.X
-FROM jupyter/minimal-notebook:9e8682c9ea54
+FROM jupyter/minimal-notebook
 LABEL maintainer="Hiromu Hota <hiromu.hota@hal.hitachi.com>"
 USER root
 
@@ -16,7 +15,7 @@ RUN rm /etc/ImageMagick-6/policy.xml
 
 USER $NB_UID
 
-RUN pip install torch==0.4.1
+RUN pip install torch==0.4.1.post2
 RUN pip install \
     fonduer>=0.5.0 \
     matplotlib
