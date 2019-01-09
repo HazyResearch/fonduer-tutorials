@@ -15,7 +15,6 @@ RUN rm /etc/ImageMagick-6/policy.xml
 
 USER $NB_UID
 
-RUN pip install torch==0.4.1.post2
 RUN pip install \
     fonduer>=0.5.0 \
     matplotlib
