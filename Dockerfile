@@ -16,7 +16,7 @@ RUN rm /etc/ImageMagick-6/policy.xml
 USER $NB_UID
 
 RUN pip install \
-    fonduer>=0.5.0 \
+    "fonduer>=0.5.0" \
     matplotlib
 
 RUN python -m spacy download en
