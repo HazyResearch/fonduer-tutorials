@@ -1,4 +1,4 @@
-FROM jupyter/minimal-notebook
+FROM jupyter/base-notebook
 LABEL maintainer="Hiromu Hota <hiromu.hota@hal.hitachi.com>"
 USER root
 
