@@ -16,10 +16,10 @@ USER $NB_UID
 
 RUN pip install \
     "fonduer>=0.5.0" \
-    matplotlib
+    matplotlib \
+    ipywidgets
 
 RUN python -m spacy download en
-RUN conda install -y -c conda-forge ipywidgets
 
 # Copy notebooks and download data
 COPY --chown=jovyan:users hardware hardware
