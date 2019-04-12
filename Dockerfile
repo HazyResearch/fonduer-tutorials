@@ -13,6 +13,7 @@ RUN rm /etc/ImageMagick-6/policy.xml
 USER $NB_UID
 
 RUN pip install \
+    https://download.pytorch.org/whl/cpu/torch-1.0.1.post2-cp37-cp37m-linux_x86_64.whl \
     "fonduer>=0.5.0" \
     matplotlib \
     ipywidgets
