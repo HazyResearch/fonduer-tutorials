@@ -3,8 +3,6 @@ LABEL maintainer="Hiromu Hota <hiromu.hota@hal.hitachi.com>"
 USER root
 
 RUN apt-get update && apt-get install -y \
-    libxml2-dev \
-    libxslt-dev \
     poppler-utils \
     postgresql-client \
     libmagickwand-dev \
