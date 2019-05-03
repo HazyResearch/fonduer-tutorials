@@ -3,6 +3,7 @@ import csv
 from builtins import range
 from fonduer.parser.models import Document, Sentence
 
+from fonduer.learning.utils import entity_confusion_matrix
 from fonduer.supervision.models import GoldLabel, GoldLabelKey
 
 try:
@@ -129,18 +130,6 @@ def load_president_gold_labels(
     session.commit()
 
     print(f"GoldLabels created: {labels}")
-
-
-# TODO: Should gold data only contain ONE true candidate per article?
-def entity_confusion_matrix(pred, gold):
-    if not isinstance(pred, set):
-        pred = set(pred)
-    if not isinstance(gold, set):
-        gold = set(gold)
-    TP = pred.intersection(gold)
-    FP = pred.difference(gold)
-    FN = gold.difference(pred)
-    return (TP, FP, FN)
 
 
 def entity_level_f1(candidates, gold_file, corpus=None):

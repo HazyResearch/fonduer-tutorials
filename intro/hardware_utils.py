@@ -2,6 +2,7 @@ import codecs
 import csv
 from builtins import range
 
+from fonduer.learning.utils import entity_confusion_matrix
 from fonduer.supervision.models import GoldLabel, GoldLabelKey
 
 try:
@@ -111,17 +112,6 @@ def load_hardware_labels(
     session.commit()
 
     print(f"GoldLabels created: {labels}")
-
-
-def entity_confusion_matrix(pred, gold):
-    if not isinstance(pred, set):
-        pred = set(pred)
-    if not isinstance(gold, set):
-        gold = set(gold)
-    TP = pred.intersection(gold)
-    FP = pred.difference(gold)
-    FN = gold.difference(pred)
-    return (TP, FP, FN)
 
 
 def entity_level_f1(
