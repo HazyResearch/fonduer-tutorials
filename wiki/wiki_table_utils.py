@@ -3,7 +3,7 @@ import csv
 from builtins import range
 from fonduer.parser.models import Document, Sentence
 
-from fonduer.learning.utils import entity_confusion_matrix
+from fonduer.learning.utils import confusion_matrix
 from fonduer.supervision.models import GoldLabel, GoldLabelKey
 
 try:
@@ -160,7 +160,7 @@ def entity_level_f1(candidates, gold_file, corpus=None):
         birthplace = c[1].context.get_span().upper()
         entities.add((doc, president_name, birthplace))
 
-    (TP_set, FP_set, FN_set) = entity_confusion_matrix(entities, gold_set)
+    (TP_set, FP_set, FN_set) = confusion_matrix(entities, gold_set)
     TP = len(TP_set)
     FP = len(FP_set)
     FN = len(FN_set)
