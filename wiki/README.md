@@ -6,7 +6,7 @@ wikipedia html pages. This is an example of knowledge base construction from
 _richly formatted data_. 
 
 The entire tutorial can be found in
-[`place_of_birth_presidents.ipynb`](place_of_birth_presidents.ipynb). Before
+[`president_place_of_birth_tutorial.ipynb`](president_place_of_birth_tutorial.ipynb). Before
 running the tutorial you will need to:
   1. Run `./download_data.sh` to get the data used in the tutorial.
   2. Create a postgres database named `pob_presidents`. Assuming you have postgres
