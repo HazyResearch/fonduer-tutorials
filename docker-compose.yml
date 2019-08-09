@@ -12,6 +12,6 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: jovyan
+      POSTGRES_USER: user
     volumes:
       - ./init:/docker-entrypoint-initdb.d
