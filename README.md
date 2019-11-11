@@ -48,7 +48,7 @@ brew install libpng freetype pkg-config
 On Debian-based distros:
 
 ```bash
-sudo apt install libxml2-dev libxslt-dev python3-dev 
+sudo apt install libxml2-dev libxslt-dev python3-dev libpq-dev
 sudo apt build-dep python-matplotlib
 sudo apt install poppler-utils
 sudo apt install postgresql
