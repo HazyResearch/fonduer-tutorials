@@ -17,9 +17,9 @@ else:
 
 
 # Define labels
-ABSTAIN = 0
-FALSE = 1
-TRUE = 2
+ABSTAIN = -1
+FALSE = 0
+TRUE = 1
 
 
 def get_gold_dict(
