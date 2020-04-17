@@ -1,3 +1,3 @@
-fonduer>=0.8.0,<0.9.0
+git+https://github.com/HiromuHota/fonduer.git@fix/400
 jupyter
 matplotlib
