@@ -9,7 +9,7 @@ services:
       - postgres
 
   postgres:
-    image: postgres
+    image: postgres:12.1
     restart: always
     environment:
       POSTGRES_USER: user
