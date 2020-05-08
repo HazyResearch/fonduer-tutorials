@@ -1,8 +1,9 @@
 import codecs
 import csv
 from builtins import range
-from fonduer.parser.models import Document, Sentence
 
+from fonduer.candidates.models import Candidate
+from fonduer.parser.models import Document, Sentence
 from fonduer.learning.utils import confusion_matrix
 from fonduer.supervision.models import GoldLabel, GoldLabelKey
 
@@ -18,9 +19,9 @@ else:
 
 
 # Define labels
-ABSTAIN = 0
-FALSE = 1
-TRUE = 2
+ABSTAIN = -1
+FALSE = 0
+TRUE = 1
 
 
 def get_gold_dict(
@@ -49,87 +50,20 @@ def get_gold_dict(
     return gold_dict
 
 
-def load_president_gold_labels(
-    session, candidate_classes, filename, annotator_name="gold"
-):
-    """Bulk insert hardware GoldLabels.
+gold_dict = get_gold_dict("data/president_tutorial_gold.csv")
 
-    :param session: The database session to use.
-    :param candidate_classes: Which candidate_classes to load labels for.
-    :param filename: Path to the CSV file containing gold labels.
-    """
-    # Check that candidate_classes is iterable
-    candidate_classes = (
-        candidate_classes
-        if isinstance(candidate_classes, (list, tuple))
-        else [candidate_classes]
-    )
 
-    print("Clearing ALL Gold labels")
-    session.query(GoldLabel).delete()
-    session.query(GoldLabelKey).delete()
+def gold(c: Candidate) -> int:
+    doc = (c[0].context.sentence.document.name).upper()
+    president_name = (c[0].context.get_span()).upper()
+    birthplace = (c[1].context.get_span()).upper()
 
-    ak = session.query(GoldLabelKey).filter(GoldLabelKey.name == annotator_name).first()
-    # Add the gold key
-    if ak is None:
-        ak = GoldLabelKey(
-            name=annotator_name,
-            candidate_classes=[_.__tablename__ for _ in candidate_classes],
-        )
-        session.add(ak)
-        session.commit()
-
-    # Bulk insert candidate labels
-    candidates = []
-    for candidate_class in candidate_classes:
-        candidates.extend(session.query(candidate_class).all())
-
-    gold_dict = get_gold_dict(filename)
-    cand_total = len(candidates)
-    print(f"Loading {cand_total} candidate labels")
-    labels = 0
-
-    docs_in_gold_dict = set([x[0] for x in gold_dict])
-    print(f"{len(docs_in_gold_dict)} different docs in gold dict")
-    candidates_by_doc = dict()
-    for name, place in candidates:
-        doc = name.context.sentence.document.name
-        if doc not in candidates_by_doc:
-            candidates_by_doc[doc] = {name: [place]}
-        else:
-            if name not in candidates_by_doc[doc]:
-                candidates_by_doc[doc][name] = [place]
-            else:
-                candidates_by_doc[doc][name].append(place)
-
-    cands = []
-    values = []
-    for i, c in enumerate(tqdm(candidates)):
-        doc = (c[0].context.sentence.document.name).upper()
-        president_name = (c[0].context.get_span()).upper()
-        birthplace = (c[1].context.get_span()).upper()
-
-        cand_tuple = (doc, president_name, birthplace)
-        # gold_matches = [x for x in gold_dict if x[0] == doc]
-        if cand_tuple in gold_dict:
-            values.append(TRUE)
-        else:
-            values.append(FALSE)
-
-        cands.append(c)
-        labels += 1
-
-    # Only insert the labels which were not already present
-    session.bulk_insert_mappings(
-        GoldLabel,
-        [
-            {"candidate_id": cand.id, "keys": [annotator_name], "values": [val]}
-            for (cand, val) in zip(cands, values)
-        ],
-    )
-    session.commit()
-
-    print(f"GoldLabels created: {labels}")
+    cand_tuple = (doc, president_name, birthplace)
+    # gold_matches = [x for x in gold_dict if x[0] == doc]
+    if cand_tuple in gold_dict:
+        return TRUE
+    else:
+        return FALSE
 
 
 def entity_level_f1(candidates, gold_file, corpus=None):
