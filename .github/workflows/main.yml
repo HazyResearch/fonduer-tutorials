@@ -1,0 +1,43 @@
+on: [push, pull_request]
+
+jobs:
+  fonduer-tutorials:
+    runs-on: ubuntu-latest
+    name: A job to run all notebooks
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build a Docker image
+      uses: docker/build-push-action@v1
+      with:
+        repository: hiromuhota/fonduer-tutorials
+        tags: latest
+        push: false
+    - name: Start a docker compose
+      run: docker-compose up -d
+    - name: Run a command inside a container
+      run: |
+        cat << EOF | docker exec -i fonduer-tutorials_jupyter_1 /bin/bash -
+        # Convert ipynb to py
+        find . -name "*.ipynb" -not -path '*/\.*' | xargs jupyter nbconvert --to script
+        sed -i -e "s/get_ipython().run_line_magic('matplotlib', 'inline')/import matplotlib\nmatplotlib.use('Agg')/" */*.py
+        sed -i -e 's/n_epochs=[0-9]*/n_epochs=5/g' */*.py
+        sed -i -e 's/"n_epochs": [0-9]*/"n_epochs": 5/g' */*.py
+
+        cd ~/hardware
+        ./download_data.sh
+        ipython max_storage_temp_tutorial.py
+
+        cd ~/wiki
+        ./download_data.sh
+        ipython president_place_of_birth_tutorial.py
+
+        cd ~/hardware_image
+        ./download_data.sh
+        ipython transistor_image_tutorial.py
+
+        cd ~/intro
+        ./download_data.sh
+        ipython Intro_Candidates.py
+        ipython Intro_Data_Model.py
+        ipython Intro_Supervision.py
+        EOF
